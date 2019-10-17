@@ -52,8 +52,8 @@ export class AppComponent implements OnInit {
       time.from = dayjs(time.from)
         .add(1, 'month')
         .valueOf();
-      time.to = dayjs(time.to)
-        .add(1, 'month')
+      time.to = dayjs(time.from)
+        .endOf('month')
         .valueOf();
       this.month = dayjs(time.from).month();
       return time;
