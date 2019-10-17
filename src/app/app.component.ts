@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import GSTC from 'gantt-schedule-timeline-calendar';
 import { ItemHold, ItemMovement, SaveAsImage } from 'gantt-schedule-timeline-calendar/dist/plugins.js';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pl';
 
 @Component({
   selector: 'app-root',
@@ -12,11 +14,70 @@ export class AppComponent implements OnInit {
 
   gstcState: any;
 
+  month: any;
+  months: any[] = [];
+
   buttonClick() {
     this.gstcState.update('config.list.rows.1.label', 'changed!');
   }
 
+  onMonthChange() {
+    this.gstcState.update('config.chart.time', (time) => {
+      time.from = dayjs(time.from)
+        .startOf('year')
+        .add(this.month, 'month')
+        .valueOf();
+      time.to = dayjs(time.to)
+        .startOf('year')
+        .add(this.month, 'month')
+        .endOf('month')
+        .valueOf();
+      return time;
+    });
+  }
+
+  previousMonth() {
+    this.gstcState.update('config.chart.time', (time) => {
+      time.from = dayjs(time.from)
+        .subtract(1, 'month')
+        .valueOf();
+      time.to = dayjs(time.to)
+        .subtract(1, 'month')
+        .valueOf();
+      this.month = dayjs(time.from).month();
+      return time;
+    });
+  }
+
+  nextMonth() {
+    this.gstcState.update('config.chart.time', (time) => {
+      time.from = dayjs(time.from)
+        .add(1, 'month')
+        .valueOf();
+      time.to = dayjs(time.to)
+        .add(1, 'month')
+        .valueOf();
+      this.month = dayjs(time.from).month();
+      return time;
+    });
+  }
+
+  createMonths() {
+    for (let i = 0; i < 12; i++) {
+      this.months.push({
+        id: i,
+        label: dayjs()
+          .locale('pl')
+          .startOf('year')
+          .add(i, 'month')
+          .format('MMMM')
+      });
+    }
+    this.month = dayjs().month();
+  }
+
   ngOnInit() {
+    this.createMonths();
     const iterations = 100;
     const rows = {};
     for (let i = 0; i < iterations; i++) {

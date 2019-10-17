@@ -1,4 +1,9 @@
 <div class="app">
   <button (click)="buttonClick()">Change something</button>
+  <button (click)="previousMonth()"><- month</button>
+  <select class="form-control" (change)="onMonthChange()" [(ngModel)]="month" required name="month">
+    <option *ngFor="let month of months" [value]="month.id">{{ month.label }}</option>
+  </select>
+  <button (click)="nextMonth()">month -></button>
   <gstc [gstcState]="gstcState"></gstc>
 </div>
