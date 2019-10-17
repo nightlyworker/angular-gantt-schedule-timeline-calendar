@@ -236,6 +236,14 @@ export class AppComponent implements OnInit {
               console.log(`${data.column.header.content} clicked!`);
             });
           }
+        ],
+        'list-column-row': [
+          (element, data) => {
+            if (data.row.id === '1') {
+              element.style.background = 'red';
+              element.style.color = 'white';
+            }
+          }
         ]
       },
       locale: {
