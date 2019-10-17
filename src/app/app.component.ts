@@ -85,7 +85,15 @@ export class AppComponent implements OnInit {
         id,
         label: 'Room ' + i,
         parentId: withParent ? (i - 1).toString() : undefined,
-        expanded: false
+        expanded: false,
+        style: {
+          current: i === 1 ? 'background: gray; color: white; font-weight: bold;' : '',
+          children: i === 1 ? 'background: lightgray;' : '',
+          gridBlock: {
+            current: i === 1 ? 'background: gray;' : '',
+            children: i === 1 ? 'background: lightgray;' : ''
+          }
+        }
       };
     }
 
@@ -115,7 +123,10 @@ export class AppComponent implements OnInit {
             .endOf('day')
             .valueOf()
         },
-        rowId: id
+        rowId: id,
+        style: {
+          current: i === 0 ? 'background: green;' : ''
+        }
       };
     }
 
@@ -240,8 +251,7 @@ export class AppComponent implements OnInit {
         'list-column-row': [
           (element, data) => {
             if (data.row.id === '1') {
-              element.style.background = 'red';
-              element.style.color = 'white';
+              element.style['font-weight'] = 'bold';
             }
           }
         ]
