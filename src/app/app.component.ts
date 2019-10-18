@@ -104,7 +104,10 @@ export class AppComponent implements OnInit {
     rows['3'].label = 'Level 1';
     rows['3'].parentId = '1';
 
-    let startDayjs = GSTC.api.date().startOf('month');
+    let startDayjs = GSTC.api
+      .date()
+      .startOf('month')
+      .add(12, 'hours');
     let items = {};
     for (let i = 0; i < iterations; i++) {
       const id = i.toString();
@@ -129,6 +132,19 @@ export class AppComponent implements OnInit {
         }
       };
     }
+
+    items['0'].snapEnd = function snapEnd(time, diff, item) {
+      const end = GSTC.api
+        .date(time)
+        .add(diff, 'milliseconds')
+        .startOf('day')
+        .add('12', 'hours')
+        .valueOf();
+      if (end <= item.time.start) {
+        return time;
+      }
+      return end;
+    };
 
     items['0'].moveable = ['0', '1', '2', '3'];
     items['0'].label = 'moveable inside rooms  0, 2, 3';
@@ -177,28 +193,41 @@ export class AppComponent implements OnInit {
       .date()
       .endOf('month')
       .valueOf();
-    let snapStart = [];
-    let snapEnd = [];
-    const diffDays = GSTC.api.date(to).diff(from, 'days') + 20;
-    for (let i = 0; i < diffDays; i++) {
-      //snap to 12:00
-      snapStart.push(
-        GSTC.api
-          .date(from)
-          .add(i - 10, 'days')
-          .add(12, 'hours')
-          .valueOf()
-      );
+
+    function snapStart(time, diff, item) {
+      return GSTC.api
+        .date(time)
+        .add(diff, 'milliseconds')
+        .startOf('day')
+        .add('12', 'hours')
+        .valueOf();
     }
-    for (let i = 0; i < diffDays; i += 3) {
-      snapEnd.push(
+
+    function snapEnd(time, diff, item) {
+      const diffDays = Math.abs(
         GSTC.api
-          .date(from)
-          .add(i - 10, 'days')
-          .add(3, 'days')
-          .add(12, 'hours')
-          .valueOf()
+          .date(time + diff)
+          .startOf('day')
+          .diff(item.time.start, 'days')
       );
+      const multipleTwo = Math.round(diffDays / 2);
+      if (multipleTwo === 0) {
+        return GSTC.api
+          .date(time)
+          .startOf('day')
+          .add(12, 'hours')
+          .valueOf();
+      }
+      const end = GSTC.api
+        .date(item.time.start)
+        .add(multipleTwo * 2, 'days')
+        .startOf('day')
+        .add('12', 'hours')
+        .valueOf();
+      if (end <= item.time.start) {
+        return time;
+      }
+      return end;
     }
 
     const config = {
