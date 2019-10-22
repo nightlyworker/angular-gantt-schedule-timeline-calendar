@@ -13,7 +13,6 @@ import { ScheduleComponent } from './schedule/schedule.component';
     BrowserModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: AppComponent },
       { path: 'schedule', component: ScheduleComponent },
       { path: 'info', component: InfoComponent }
     ])
