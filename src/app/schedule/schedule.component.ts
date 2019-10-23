@@ -178,6 +178,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
           expander: true,
           isHtml: true,
           width: 230,
+          minWidth: 100,
           header: {
             content: 'Room'
           }
