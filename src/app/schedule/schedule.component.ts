@@ -287,22 +287,23 @@ export class ScheduleComponent implements OnInit, OnDestroy {
         ],
         'chart-timeline-grid-block': [
           function gridBlockAction(element, data) {
-            let bg;
-            function addCustomElement(element, row) {
-              element.insertAdjacentHTML('beforeend', '<div class="grid-block-1-content">$</div>');
-              bg = element.querySelector('.grid-block-1-content');
-              bg.style['line-height'] = row.height + 'px';
-              bg.onclick = (ev) => alert('money money money');
-            }
+            // on create
+            element.insertAdjacentHTML('beforeend', '<div class="dolar-bg-content">$</div>');
+            let bg = element.querySelector('.dolar-bg-content');
+            bg.onclick = (ev) => alert('dolar clicked!');
             if (data.row.id === '1') {
-              addCustomElement(element, data.row);
+              bg.style['line-height'] = data.row.height + 'px';
+              bg.style.visibility = 'visible';
+            } else {
+              bg.style.visibility = 'hidden';
             }
             return {
               update(element, changedData) {
                 if (data.row.id === '1' && changedData.row.id !== '1') {
-                  bg.remove();
+                  bg.style.visibility = 'hidden';
                 } else if (data.row.id !== '1' && changedData.row.id === '1') {
-                  addCustomElement(element, changedData.row);
+                  bg.style['line-height'] = changedData.row.height + 'px';
+                  bg.style.visibility = 'visible';
                 }
                 data = changedData;
               },
