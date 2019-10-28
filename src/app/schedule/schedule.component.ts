@@ -284,6 +284,33 @@ export class ScheduleComponent implements OnInit, OnDestroy {
               element.style['font-weight'] = 'bold';
             }
           }
+        ],
+        'chart-timeline-grid-block': [
+          function gridBlockAction(element, data) {
+            let bg;
+            function addCustomElement(element, row) {
+              element.insertAdjacentHTML('beforeend', '<div class="grid-block-1-content">$</div>');
+              bg = element.querySelector('.grid-block-1-content');
+              bg.style['line-height'] = row.height + 'px';
+              bg.onclick = (ev) => alert('money money money');
+            }
+            if (data.row.id === '1') {
+              addCustomElement(element, data.row);
+            }
+            return {
+              update(element, changedData) {
+                if (data.row.id === '1' && changedData.row.id !== '1') {
+                  bg.remove();
+                } else if (data.row.id !== '1' && changedData.row.id === '1') {
+                  addCustomElement(element, changedData.row);
+                }
+                data = changedData;
+              },
+              destroy(element, data) {
+                if (bg) bg.remove();
+              }
+            };
+          }
         ]
       },
       locale: {
