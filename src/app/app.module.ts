@@ -12,10 +12,10 @@ import { ScheduleComponent } from './schedule/schedule.component';
   imports: [
     BrowserModule,
     FormsModule,
-    RouterModule.forRoot([
-      { path: 'schedule', component: ScheduleComponent },
-      { path: 'info', component: InfoComponent }
-    ])
+    RouterModule.forRoot(
+      [{ path: 'schedule', component: ScheduleComponent }, { path: 'info', component: InfoComponent }],
+      { useHash: true }
+    )
   ],
   providers: [],
   bootstrap: [AppComponent]
