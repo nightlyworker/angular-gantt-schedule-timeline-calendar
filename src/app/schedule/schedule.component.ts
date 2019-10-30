@@ -285,7 +285,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
             }
           }
         ],
-        'chart-timeline-grid-block': [
+        'chart-timeline-grid-row-block': [
           function gridBlockAction(element, data) {
             // on create
             element.insertAdjacentHTML('beforeend', '<div class="dolar-bg-content">$</div>');
