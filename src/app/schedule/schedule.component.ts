@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import GSTC from 'gantt-schedule-timeline-calendar/src/index';
-import { ItemHold, ItemMovement, SaveAsImage } from 'gantt-schedule-timeline-calendar/src/plugins/plugins';
+import { ItemHold, ItemMovement, SaveAsImage, Selection } from 'gantt-schedule-timeline-calendar/src/plugins/plugins';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pl';
 
@@ -247,7 +247,8 @@ export class ScheduleComponent implements OnInit, OnDestroy {
           snapStart,
           snapEnd
         }),
-        SaveAsImage()
+        SaveAsImage(),
+        Selection()
       ],
       height: 40 * 12 + 94,
       list: {
