@@ -1,8 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import GSTC from 'gantt-schedule-timeline-calendar/src/index';
-import { ItemHold, ItemMovement, SaveAsImage, Selection } from 'gantt-schedule-timeline-calendar/src/plugins/plugins';
+import plugins from 'gantt-schedule-timeline-calendar/dist/plugins';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pl';
+const { ItemHold, ItemMovement, SaveAsImage, Selection } = plugins;
 
 @Component({
   selector: 'app-schedule',
@@ -76,7 +77,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.createMonths();
-    const iterations = 100;
+    const iterations = 400;
     const rows = {};
     for (let i = 0; i < iterations; i++) {
       const withParent = i > 0 && i % 2 === 0;
@@ -248,7 +249,9 @@ export class ScheduleComponent implements OnInit, OnDestroy {
           snapEnd
         }),
         SaveAsImage(),
-        Selection()
+        Selection({
+          rectStyle: { opacity: '0' }
+        })
       ],
       height: 40 * 12 + 94,
       list: {
