@@ -1,17 +1,17 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import GSTC from 'gantt-schedule-timeline-calendar/src/index';
-import plugins from 'gantt-schedule-timeline-calendar/dist/plugins';
-import dayjs from 'dayjs';
-import 'dayjs/locale/pl';
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import GSTC from "gantt-schedule-timeline-calendar/dist/index.esm.js";
+import plugins from "gantt-schedule-timeline-calendar/dist/plugins.js";
+import dayjs from "dayjs";
+import "dayjs/locale/pl";
 const { ItemHold, ItemMovement, SaveAsImage, Selection } = plugins;
 
 @Component({
-  selector: 'app-schedule',
-  templateUrl: './schedule.component.html',
-  styleUrls: ['./schedule.component.scss']
+  selector: "app-schedule",
+  templateUrl: "./schedule.component.html",
+  styleUrls: ["./schedule.component.scss"]
 })
 export class ScheduleComponent implements OnInit, OnDestroy {
-  title = 'angular-gantt-schedule-timeline-calendar';
+  title = "angular-gantt-schedule-timeline-calendar";
 
   gstcState: any;
 
@@ -19,29 +19,29 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   months: any[] = [];
 
   buttonClick() {
-    this.gstcState.update('config.list.rows.1.label', 'changed!');
+    this.gstcState.update("config.list.rows.1.label", "changed!");
   }
 
   onMonthChange() {
-    this.gstcState.update('config.chart.time', (time) => {
+    this.gstcState.update("config.chart.time", time => {
       time.from = dayjs(time.from)
-        .startOf('year')
-        .add(this.month, 'month')
+        .startOf("year")
+        .add(this.month, "month")
         .valueOf();
       time.to = dayjs(time.from)
-        .endOf('month')
+        .endOf("month")
         .valueOf();
       return time;
     });
   }
 
   previousMonth() {
-    this.gstcState.update('config.chart.time', (time) => {
+    this.gstcState.update("config.chart.time", time => {
       time.from = dayjs(time.from)
-        .subtract(1, 'month')
+        .subtract(1, "month")
         .valueOf();
       time.to = dayjs(time.from)
-        .endOf('month')
+        .endOf("month")
         .valueOf();
       this.month = dayjs(time.from).month();
       return time;
@@ -49,12 +49,12 @@ export class ScheduleComponent implements OnInit, OnDestroy {
   }
 
   nextMonth() {
-    this.gstcState.update('config.chart.time', (time) => {
+    this.gstcState.update("config.chart.time", time => {
       time.from = dayjs(time.from)
-        .add(1, 'month')
+        .add(1, "month")
         .valueOf();
       time.to = dayjs(time.from)
-        .endOf('month')
+        .endOf("month")
         .valueOf();
       this.month = dayjs(time.from).month();
       return time;
@@ -66,10 +66,10 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       this.months.push({
         id: i,
         label: dayjs()
-          .locale('pl')
-          .startOf('year')
-          .add(i, 'month')
-          .format('MMMM')
+          .locale("pl")
+          .startOf("year")
+          .add(i, "month")
+          .format("MMMM")
       });
     }
     this.month = dayjs().month();
@@ -84,62 +84,81 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       const id = i.toString();
       rows[id] = {
         id,
-        label: 'Room ' + i,
+        label: "Room " + i,
         parentId: withParent ? (i - 1).toString() : undefined,
         expanded: false,
+        canSelect: i === 7 || i === 1 ? false : true,
         style: {
-          current: i === 1 ? 'background: gray; color: white; font-weight: bold;' : '',
-          children: i === 1 ? 'background: lightgray;' : '',
-          gridBlock: {
-            current: i === 1 ? 'background: gray;' : '',
-            children: i === 1 ? 'background: lightgray;' : ''
+          current:
+            i === 1
+              ? { background: "gray", color: "white", "font-weight": "bold" }
+              : {},
+          children: i === 1 ? { background: "lightgray" } : {},
+          grid: {
+            block: {
+              current:
+                i === 1
+                  ? {
+                      background: "gray",
+                      color: "white",
+                      "font-weight": "bold"
+                    }
+                  : {},
+              children: i === 1 ? { background: "lightgray" } : {}
+            }
+          },
+          items: {
+            item: {
+              current: i === 2 ? { background: "olive" } : {},
+              children: i === 2 ? { background: "olive" } : {}
+            },
+            row: {}
           }
         }
       };
     }
 
-    rows['1'].height = 80;
-    rows['1'].moveable = false;
-    rows['1'].label = 'Apartaments';
-    rows['2'].label = 'Level 0';
-    rows['3'].label = 'Level 1';
-    rows['3'].parentId = '1';
+    rows["1"].height = 80;
+    rows["1"].moveable = false;
+    rows["1"].label = "Apartaments";
+    rows["2"].label = "Level 0";
+    rows["3"].label = "Level 1";
+    rows["3"].parentId = "1";
+    rows["7"].label = "Not selectable";
 
     let startDayjs = GSTC.api
       .date()
-      .startOf('month')
-      .add(12, 'hours');
+      .startOf("month")
+      .add(12, "hours");
     let items = {};
     for (let i = 0; i < iterations; i++) {
       const id = i.toString();
+      const start = startDayjs
+        .clone()
+        .add(Math.round(Math.random() * 26) + 1, "day")
+        .valueOf();
       items[id] = {
         id,
-        label: 'User id ' + i,
+        label: "User id " + i,
         time: {
-          start: startDayjs
-            .clone()
-            .add(i, 'day')
-            .valueOf(),
-          end: startDayjs
-            .clone()
-            .add(i, 'day')
-            .add(Math.round(Math.random() * 4) + 1, 'day')
-            .endOf('day')
-            .valueOf()
+          start,
+          end:
+            GSTC.api
+              .date(start)
+              .add(2, "days")
+              .valueOf() - 1
         },
         rowId: id,
-        style: {
-          current: i === 0 ? 'background: green;' : ''
-        }
+        style: i === 0 ? { background: "green", color: "white" } : {}
       };
     }
 
-    items['0'].snapEnd = function snapEnd(time, diff, item) {
+    items["0"].snapEnd = function snapEnd(time, diff, item) {
       const end = GSTC.api
         .date(time)
-        .add(diff, 'milliseconds')
-        .startOf('day')
-        .add('12', 'hours')
+        .add(diff, "milliseconds")
+        .startOf("day")
+        .add("12", "hours")
         .valueOf();
       if (end <= item.time.start) {
         return time;
@@ -147,25 +166,32 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       return end;
     };
 
-    items['0'].moveable = ['0', '1', '2', '3'];
-    items['0'].label = 'moveable inside rooms  0, 2, 3';
+    items["8"].label = "end on 5 and 9 only";
+    items["8"].time.start = GSTC.api
+      .date()
+      .startOf("month")
+      .add(12, "hour")
+      .valueOf();
 
-    items['1'].rowId = '12';
+    items["0"].moveable = ["0", "1", "2", "3"];
+    items["0"].label = "moveable inside rooms  0, 2, 3";
 
-    items['2'].moveable = 'x';
-    items['2'].label = 'moveable x';
+    items["1"].rowId = "12";
 
-    items['3'].moveable = 'y';
-    items['3'].label = 'moveable y';
+    items["2"].moveable = "x";
+    items["2"].label = "moveable x";
 
-    items['4'].moveable = false;
-    items['4'].label = 'not moveable';
+    items["3"].moveable = "y";
+    items["3"].label = "moveable y";
 
-    items['5'].resizeable = false;
-    items['5'].label = 'not resizeable';
+    items["4"].moveable = false;
+    items["4"].label = "not moveable";
 
-    items['6'].moveable = ['1', '2', '3', '6'];
-    items['6'].label = 'moveable inside rooms  1, 2, 3, 6';
+    items["5"].resizeable = false;
+    items["5"].label = "not resizeable";
+
+    items["6"].moveable = ["1", "2", "3", "6"];
+    items["6"].label = "moveable inside rooms  1, 2, 3, 6";
 
     const columns = {
       percent: 100,
@@ -174,34 +200,25 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       },
       data: {
         label: {
-          id: 'label',
-          data: 'label',
+          id: "label",
+          data: "label",
           expander: true,
           isHtml: true,
           width: 230,
           minWidth: 100,
           header: {
-            content: 'Room'
+            content: "Room"
           }
         }
       }
     };
 
-    const from = GSTC.api
-      .date()
-      .startOf('month')
-      .valueOf();
-    const to = GSTC.api
-      .date()
-      .endOf('month')
-      .valueOf();
-
     function snapStart(time, diff, item) {
       return GSTC.api
         .date(time)
-        .add(diff, 'milliseconds')
-        .startOf('day')
-        .add('12', 'hours')
+        .add(diff, "milliseconds")
+        .startOf("day")
+        .add("12", "hours")
         .valueOf();
     }
 
@@ -209,22 +226,22 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       const diffDays = Math.abs(
         GSTC.api
           .date(time + diff)
-          .startOf('day')
-          .diff(item.time.start, 'days')
+          .startOf("day")
+          .diff(item.time.start, "days")
       );
       const multipleTwo = Math.round(diffDays / 2);
       if (multipleTwo === 0) {
         return GSTC.api
           .date(time)
-          .startOf('day')
-          .add(12, 'hours')
+          .startOf("day")
+          .add(12, "hours")
           .valueOf();
       }
       const end = GSTC.api
         .date(item.time.start)
-        .add(multipleTwo * 2, 'days')
-        .startOf('day')
-        .add('12', 'hours')
+        .add(multipleTwo * 2, "days")
+        .startOf("day")
+        .add("12", "hours")
         .valueOf();
       if (end <= item.time.start) {
         return time;
@@ -232,7 +249,16 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       return end;
     }
 
-    const config = {
+    const from = GSTC.api
+      .date()
+      .startOf("month")
+      .valueOf();
+    const to = GSTC.api
+      .date()
+      .endOf("month")
+      .valueOf();
+
+    let config = {
       plugins: [
         ItemHold({
           time: 1000,
@@ -250,7 +276,44 @@ export class ScheduleComponent implements OnInit, OnDestroy {
         }),
         SaveAsImage(),
         Selection({
-          rectStyle: { opacity: '0' }
+          items: false,
+          rows: false,
+          grid: true,
+          rectStyle: { opacity: "0.0" },
+          canSelect(type, currentlySelecting) {
+            if (type === "chart-timeline-grid-row-block") {
+              // check if there is any item that lives inside current cell
+              return currentlySelecting.filter(selected => {
+                if (!selected.row.canSelect) return false;
+                for (const item of selected.row._internal.items) {
+                  if (
+                    (item.time.start >= selected.time.leftGlobal &&
+                      item.time.start <= selected.time.rightGlobal) ||
+                    (item.time.end >= selected.time.leftGlobal &&
+                      item.time.end <= selected.time.rightGlobal) ||
+                    (item.time.start <= selected.time.leftGlobal &&
+                      item.time.end >= selected.time.rightGlobal)
+                  ) {
+                    return false;
+                  }
+                }
+                return true;
+              });
+            }
+            return currentlySelecting;
+          },
+          selecting(data, type) {
+            //console.log(`selecting ${type}`, data);
+          },
+          deselecting(data, type) {
+            //console.log(`deselecting ${type}`, data);
+          },
+          selected(data, type) {
+            //console.log(`selected ${type}`, data);
+          },
+          deselected(data, type) {
+            //console.log(`deselected ${type}`, data);
+          }
         })
       ],
       height: 40 * 12 + 94,
@@ -265,49 +328,54 @@ export class ScheduleComponent implements OnInit, OnDestroy {
         spacing: 1,
         items,
         time: {
-          period: 'day',
+          period: "day",
           from,
           to
         }
       },
       classNames: {},
       actions: {
-        'list-column-header': [
+        "list-column-header": [
           (element, data) => {
-            const target = element.querySelector('.gantt-schedule-timeline-calendar__list-column-header-content');
-            target.style['cursor'] = 'pointer';
-            target.addEventListener('click', () => {
-              target.style.color = '#' + Math.round(Math.random() * 999999);
+            const target = element.querySelector(
+              ".gantt-schedule-timeline-calendar__list-column-header-content"
+            );
+            target.style["cursor"] = "pointer";
+            target.addEventListener("click", () => {
+              target.style.color = "#" + Math.round(Math.random() * 999999);
               console.log(`${data.column.header.content} clicked!`);
             });
           }
         ],
-        'list-column-row': [
+        "list-column-row": [
           (element, data) => {
-            if (data.row.id === '1') {
-              element.style['font-weight'] = 'bold';
+            if (data.row.id === "1") {
+              element.style["font-weight"] = "bold";
             }
           }
         ],
-        'chart-timeline-grid-row-block': [
+        "chart-timeline-grid-row-block": [
           function gridBlockAction(element, data) {
             // on create
-            element.insertAdjacentHTML('beforeend', '<div class="dolar-bg-content">$</div>');
-            let bg = element.querySelector('.dolar-bg-content');
-            bg.onclick = (ev) => alert('dolar clicked!');
-            if (data.row.id === '1') {
-              bg.style['line-height'] = data.row.height + 'px';
-              bg.style.visibility = 'visible';
+            element.insertAdjacentHTML(
+              "beforeend",
+              '<div class="dolar-bg-content">$</div>'
+            );
+            let bg = element.querySelector(".dolar-bg-content");
+            bg.onclick = ev => alert("dolar clicked!");
+            if (data.row.id === "1") {
+              bg.style["line-height"] = data.row.height + "px";
+              bg.style.visibility = "visible";
             } else {
-              bg.style.visibility = 'hidden';
+              bg.style.visibility = "hidden";
             }
             return {
               update(element, changedData) {
-                if (data.row.id === '1' && changedData.row.id !== '1') {
-                  bg.style.visibility = 'hidden';
-                } else if (data.row.id !== '1' && changedData.row.id === '1') {
-                  bg.style['line-height'] = changedData.row.height + 'px';
-                  bg.style.visibility = 'visible';
+                if (data.row.id === "1" && changedData.row.id !== "1") {
+                  bg.style.visibility = "hidden";
+                } else if (data.row.id !== "1" && changedData.row.id === "1") {
+                  bg.style["line-height"] = changedData.row.height + "px";
+                  bg.style.visibility = "visible";
                 }
                 data = changedData;
               },
@@ -319,27 +387,34 @@ export class ScheduleComponent implements OnInit, OnDestroy {
         ]
       },
       locale: {
-        name: 'pl',
-        weekdays: 'Niedziela_Poniedziałek_Wtorek_Środa_Czwartek_Piątek_Sobota'.split('_'),
-        weekdaysShort: 'Ndz_Pon_Wt_Śr_Czw_Pt_Sob'.split('_'),
-        weekdaysMin: 'Nd_Pn_Wt_Śr_Cz_Pt_So'.split('_'),
-        months: 'Styczeń_Luty_Marzec_Kwiecień_Maj_Czerwiec_Lipiec_Sierpień_Wrzesień_Październik_Listopad_Grudzień'.split(
-          '_'
+        name: "pl",
+        weekdays: "Niedziela_Poniedziałek_Wtorek_Środa_Czwartek_Piątek_Sobota".split(
+          "_"
         ),
-        monthsShort: 'sty_lut_mar_kwi_maj_cze_lip_sie_wrz_paź_lis_gru'.split('_'),
+        weekdaysShort: "Ndz_Pon_Wt_Śr_Czw_Pt_Sob".split("_"),
+        weekdaysMin: "Nd_Pn_Wt_Śr_Cz_Pt_So".split("_"),
+        months: "Styczeń_Luty_Marzec_Kwiecień_Maj_Czerwiec_Lipiec_Sierpień_Wrzesień_Październik_Listopad_Grudzień".split(
+          "_"
+        ),
+        monthsShort: "sty_lut_mar_kwi_maj_cze_lip_sie_wrz_paź_lis_gru".split(
+          "_"
+        ),
         weekStart: 1
       }
     };
     this.gstcState = GSTC.api.stateFromConfig(config);
-    this.gstcState.subscribe('config.list.rows', (rows) => {
-      console.log('rows changed', rows);
+    this.gstcState.subscribe("config.list.rows", rows => {
+      console.log("rows changed", rows);
     });
     this.gstcState.subscribe(
-      'config.chart.items.:id',
+      "config.chart.items.:id",
       (bulk, eventInfo) => {
-        if (eventInfo.type === 'update' && eventInfo.params.id) {
+        if (eventInfo.type === "update" && eventInfo.params.id) {
           const itemId = eventInfo.params.id;
-          console.log(`item ${itemId} changed`, this.gstcState.get('config.chart.items.' + itemId));
+          console.log(
+            `item ${itemId} changed`,
+            this.gstcState.get("config.chart.items." + itemId)
+          );
         }
       },
       { bulk: true }

@@ -1,10 +1,19 @@
-import { Component, AfterViewInit, ElementRef, ViewChild, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
-import GSTC from 'gantt-schedule-timeline-calendar/src/index';
+import {
+  Component,
+  AfterViewInit,
+  ElementRef,
+  ViewChild,
+  Input,
+  Output,
+  EventEmitter,
+  OnDestroy
+} from "@angular/core";
+import GSTC from "gantt-schedule-timeline-calendar/dist/index.esm.js";
 
 @Component({
-  selector: 'gstc',
-  templateUrl: './gstc.component.html',
-  styleUrls: ['./gstc.component.scss']
+  selector: "gstc",
+  templateUrl: "./gstc.component.html",
+  styleUrls: ["./gstc.component.scss"]
 })
 export class GSTCComponent implements AfterViewInit, OnDestroy {
   @Input() gstcState: any;
@@ -14,7 +23,7 @@ export class GSTCComponent implements AfterViewInit, OnDestroy {
   GSTC: any;
 
   constructor() {}
-  @ViewChild('gstc', { read: ElementRef, static: true }) gstc: ElementRef;
+  @ViewChild("gstc", { read: ElementRef, static: true }) gstc: ElementRef;
 
   ngAfterViewInit() {
     const element = this.gstc.nativeElement;

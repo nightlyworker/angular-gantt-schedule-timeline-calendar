@@ -6,6 +6,6 @@
     "types": []
   },
   "files": ["src/main.ts", "src/polyfills.ts"],
-  "include": ["src/**/*.ts", "node_modules/gantt-schedule-timeline-calendar/**/*.ts"],
-  "exclude": ["src/test.ts", "src/**/*.spec.ts", "node_modules/gantt-schedule-timeline-calendar/src/plugins/*.ts"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/test.ts", "src/**/*.spec.ts"]
 }
