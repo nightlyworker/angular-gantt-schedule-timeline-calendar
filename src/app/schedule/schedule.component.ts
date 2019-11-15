@@ -91,7 +91,11 @@ export class ScheduleComponent implements OnInit, OnDestroy {
         style: {
           current:
             i === 1
-              ? { background: "gray", color: "white", "font-weight": "bold" }
+              ? {
+                  background: "gray",
+                  color: "white",
+                  "font-weight": "bold"
+                }
               : {},
           children: i === 1 ? { background: "lightgray" } : {},
           grid: {
@@ -249,6 +253,48 @@ export class ScheduleComponent implements OnInit, OnDestroy {
       return end;
     }
 
+    /**
+     * Grid block action - add dolar to apartaments
+     * @param {Element} element
+     * @param {object} data
+     * @returns {object} with update and destroy functions
+     */
+    class GridBlockAction {
+      bg: HTMLElement;
+      constructor(element, data) {
+        const content = element.firstElementChild;
+        // on create
+        content.insertAdjacentHTML(
+          "beforeend",
+          '<div class="dolar-bg-content">$</div>'
+        );
+        const bg = (this.bg = content.querySelector(".dolar-bg-content"));
+        bg.onclick = ev => alert("dolar clicked!");
+        if (data.row.id !== "1" && bg.style.visibility !== "hidden") {
+          bg.style["line-height"] = data.row.height + "px";
+          bg.style.visibility = "hidden";
+        } else if (data.row.id === "1" && bg.style.visibility !== "visible") {
+          bg.style["line-height"] = data.row.height + "px";
+          bg.style.visibility = "visible";
+        }
+      }
+
+      update(element, data) {
+        let bg = this.bg;
+        if (data.row.id !== "1" && bg.style.visibility !== "hidden") {
+          bg.style["line-height"] = data.row.height + "px";
+          bg.style.visibility = "hidden";
+        } else if (data.row.id === "1" && bg.style.visibility !== "visible") {
+          bg.style["line-height"] = data.row.height + "px";
+          bg.style.visibility = "visible";
+        }
+      }
+
+      destroy(element) {
+        if (this.bg) this.bg.remove();
+      }
+    }
+
     const from = GSTC.api
       .date()
       .startOf("month")
@@ -316,13 +362,10 @@ export class ScheduleComponent implements OnInit, OnDestroy {
           }
         })
       ],
-      height: 40 * 12 + 94,
+      height: 800,
       list: {
         rows,
-        columns,
-        expander: {
-          padding: 31
-        }
+        columns
       },
       chart: {
         spacing: 1,
@@ -354,37 +397,7 @@ export class ScheduleComponent implements OnInit, OnDestroy {
             }
           }
         ],
-        "chart-timeline-grid-row-block": [
-          function gridBlockAction(element, data) {
-            // on create
-            element.insertAdjacentHTML(
-              "beforeend",
-              '<div class="dolar-bg-content">$</div>'
-            );
-            let bg = element.querySelector(".dolar-bg-content");
-            bg.onclick = ev => alert("dolar clicked!");
-            if (data.row.id === "1") {
-              bg.style["line-height"] = data.row.height + "px";
-              bg.style.visibility = "visible";
-            } else {
-              bg.style.visibility = "hidden";
-            }
-            return {
-              update(element, changedData) {
-                if (data.row.id === "1" && changedData.row.id !== "1") {
-                  bg.style.visibility = "hidden";
-                } else if (data.row.id !== "1" && changedData.row.id === "1") {
-                  bg.style["line-height"] = changedData.row.height + "px";
-                  bg.style.visibility = "visible";
-                }
-                data = changedData;
-              },
-              destroy(element, data) {
-                if (bg) bg.remove();
-              }
-            };
-          }
-        ]
+        "chart-timeline-grid-row-block": [GridBlockAction]
       },
       locale: {
         name: "pl",
